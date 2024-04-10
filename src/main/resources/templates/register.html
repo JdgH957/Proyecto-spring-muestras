@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <!-- Enlace a Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Enlaces a los iconos de Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+
+                        <div class="mb-md-5 mt-md-4 pb-5">
+
+                            <h2 class="fw-bold mb-4 text-uppercase">Register</h2>
+                            <p class="text-white-50 mb-4">Please enter your information</p>
+
+                            <form id="registerForm">
+                                <div class="form-group">
+                                    <input type="text" class="form-control form-control-lg" id="username"
+                                        placeholder="Username">
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="email" class="form-control form-control-lg" id="email" placeholder="Email">
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" class="form-control form-control-lg" id="password"
+                                        placeholder="Password">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="role">Select your role:</label>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="role" name="role">
+                                        <label class="custom-control-label" for="role" id="roleLabel">Paciente</label>
+                                    </div>
+                                </div>
+
+                                <br>
+
+                                <button type="button" class="btn btn-outline-light btn-lg btn-block" onclick="register()">Register</button>
+                            </form>
+
+                        </div>
+
+                        <div>
+                            <p class="mb-0">Already have an account? <a href="/login"
+                                    class="text-white-50 fw-bold">Sign In</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts de Bootstrap y jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+            // Función para actualizar el texto del rol seleccionado
+            function updateRoleLabel() {
+                var roleLabel = document.getElementById("roleLabel");
+                var roleCheckbox = document.getElementById("role");
+
+                if (roleCheckbox.checked) {
+                            roleLabel.textContent = "Encargado";
+                        } else {
+                            roleLabel.textContent = "Paciente";
+                        }
+                }
+
+            // Llamar a la función updateRoleLabel() para establecer el texto inicial
+            updateRoleLabel();
+
+            // Agregar un event listener para detectar cambios en el estado del switch
+            document.getElementById("role").addEventListener("change", updateRoleLabel);
+
+        function register() {
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;            
+            var password = document.getElementById("password").value;
+            var role = document.getElementById("role").checked ? "Encargado" : "Paciente";
+
+            var data = {
+                username: username,
+                password: password,
+                email: email
+            };
+
+            // Enviar los datos del formulario al backend
+            $.ajax({
+                type: "POST",
+                url: "/auth/register",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    // Manejar la respuesta del backend
+                    localStorage.setItem('jwtToken', response.token);
+                    console.log(response);
+                    // Redireccionar a otra página, etc.
+                    //if (role === "Encargado") {
+                    //    window.location.href = "/encargado";
+                    //} else {
+                    //    window.location.href = "/paciente";
+                    //}
+                },
+                error: function (xhr, status, error) {
+                    // Manejar errores
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
