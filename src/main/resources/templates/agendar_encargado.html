@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Citas</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="vh-100 gradient-custom">
+    <div class="container-fluid h-100">
+        <div class="row flex-nowrap">
+            <!-- Barra lateral de navegación (sidebar) -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
+                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <hr>
+                </div>
+            </div>
+            <!-- Contenido principal: Listado de citas disponibles -->
+            <div class="col py-3">
+                <h2 class="fw-bold mb-4 text-uppercase">MIS CITAS</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped" id="available-appointments">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Médico</th>
+                                <th>Tipo de Cita</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Las filas se añadirán dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Botón para redireccionar a la pantalla de creación de citas -->
+                <div class="mt-4">
+                    <button type="button" onclick="redirectToCreateAppointmentPage()" class="btn btn-success">Crear Nueva Cita</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" async></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" async></script>
+    <script>
+        function loadAvailableAppointments() {
+            var token = localStorage.getItem('jwtToken');
+            var userId = localStorage.getItem('userId');
+
+            $.ajax({
+                type: "GET",
+                url: "/api/citas/list/",
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    var tableBody = $('#available-appointments tbody');
+                    tableBody.empty();
+                    // Filtrar citas que están disponibles y cuyo médico es el usuario actual
+                    console.log(data);
+                    var filteredAppointments = data.filter(function(appointment) {
+                        return appointment.status === "disponible" && appointment.doctor.user.id === parseInt(userId);
+                    });
+                    console.log(filteredAppointments);
+                    filteredAppointments.forEach(function(appointment) {
+                        var formattedDate = new Date(appointment.date).toLocaleString();
+                        var row = `<tr>
+                                    <td>${appointment.id}</td>
+                                    <td>${formattedDate}</td>
+                                    <td>${appointment.doctor.fullName}</td>
+                                    <td>${appointment.type}</td>
+                                    <td><button type="button" onclick="getSample(${appointment.id})" class="btn btn-danger">Eliminar</button></td>
+                                </tr>`;
+                        tableBody.append(row);
+                    });
+                },
+                error: function(xhr) {
+                    console.error("Error al cargar citas disponibles: ", xhr.responseText);
+                }
+            });
+        }
+        function getSample(appointmentId) {
+            localStorage.setItem('appointmentId', appointmentId);
+            var token = localStorage.getItem('jwtToken');
+            var appointmentId = localStorage.getItem('appointmentId');
+            console.log(appointmentId);
+            $.ajax({
+                type: "GET",
+                url: "/api/samples/list/",
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data_muestra) {
+                    console.log(data_muestra);
+                    var muestra = data_muestra.find(function(muestra) {
+                    return muestra.appointment.id === parseInt(appointmentId)});
+                    console.log(muestra);
+                    delete muestra.appointment.doctor.user;
+                    localStorage.setItem('sampleId', muestra.id);
+                    deleteSample();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al cargar el perfil: ", xhr.responseText);
+                }
+            });
+        }
+        function deleteSample() {
+            var token = localStorage.getItem('jwtToken');
+            var sampleId = localStorage.getItem('sampleId');
+            if (confirm('¿Está seguro de que desea eliminar esta cita?')) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/samples/" + sampleId,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function() {
+                        alert('Muestra eliminada con éxito.');
+                        deleteAppointment(); // Recargar lista
+                    },
+                    error: function(xhr) {
+                        alert('Error al eliminar la cita: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+        function deleteAppointment() {
+            var token = localStorage.getItem('jwtToken');
+            var appointmentId = localStorage.getItem('appointmentId');
+            $.ajax({
+                type: "DELETE",
+                url: "/api/citas/" + appointmentId,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function() {
+                    alert('Cita eliminada con éxito.');
+                    redirectToShedulePage(); // Recargar lista
+                },
+                error: function(xhr) {
+                    alert('Error al eliminar la cita: ' + xhr.responseText);
+                }
+            });
+            
+        }
+        function redirectToHomePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/home";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+
+        function redirectToProfilePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/profile";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+        function redirectToShedulePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/shedule";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+        function redirectToCreateAppointmentPage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/new_appointment";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+
+        $(document).ready(function() {
+            loadAvailableAppointments();
+        });
+    </script>
+</body>
+</html>

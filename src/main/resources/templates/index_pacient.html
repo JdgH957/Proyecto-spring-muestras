@@ -15,21 +15,17 @@
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                         <li class="nav-item">
-                            <a href="#home" class="nav-link align-middle px-0">
+                            <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
                                 <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#profile" class="nav-link px-0 align-middle">
+                            <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
                         </li>
                         <li>
-                            <a href="#schedule" class="nav-link px-0 align-middle">
+                            <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
-                        </li>
-                        <li>
-                            <a href="#notifications" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-bell"></i> <span class="ms-1 d-none d-sm-inline">Notifications</span> </a>
                         </li>
                     </ul>
                     <hr>
@@ -127,7 +123,7 @@
             success: function(data) {
                 console.log(data);
                 var filteredAppointments = data.filter(function(appointment) {
-                    return appointment.patient.id === parseInt(userId);
+                    return appointment.patient?.id === parseInt(userId);
                 });
 
                 var tableBody = $('#' + status + '-appointments tbody');
@@ -143,9 +139,18 @@
                 // Añadir citas a la tabla
                 appointmentList.forEach(function(appointment) {
                     console.log("Añadiendo cita a la tabla: ", appointment);
+                    // Configura la fecha al formato local deseado
+                    var formattedDate = new Date(appointment.date).toLocaleString('es-CO', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
                     var row = `<tr>
                                     <td>${appointment.id}</td>
-                                    <td>${appointment.date}</td>
+                                    <td>${formattedDate}</td>
                                     <td>${appointment.doctor.fullName}</td>
                                     <td>${appointment.status}</td>
                                     <td><button type="button" onclick="redirectAppointmentDetails(${appointment.id})" class="btn btn-primary">Detalles</button></td>
@@ -159,10 +164,10 @@
         });
     }
 
-    // Event handlers para cada pestaña
-    $('#pending-tab').click(function() { getUserAppointments('espera'); });
-    $('#future-tab').click(function() { getUserAppointments('proxima'); });
-    $('#finished-tab').click(function() { getUserAppointments('finalizada'); });
+        // Event handlers para cada pestaña
+        $('#pending-tab').click(function() { getUserAppointments('espera'); });
+        $('#future-tab').click(function() { getUserAppointments('proxima'); });
+        $('#finished-tab').click(function() { getUserAppointments('finalizada'); });
 
 
         // Llamar a esta función al cargar la página para mostrar las citas pendientes inicialmente
@@ -190,6 +195,65 @@
                         console.error("Access denied: ", xhr.responseText);
                     }
             });            
+        }
+
+        function redirectToHomePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/home";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+
+        function redirectToProfilePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/profile";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+        function redirectToShedulePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/shedule";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
         }
 
     </script>

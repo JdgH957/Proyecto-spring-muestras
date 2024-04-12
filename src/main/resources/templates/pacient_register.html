@@ -151,6 +151,7 @@
                 success: function (response) {
                     // Manejar la respuesta del backend
                     console.log(response);
+                    redirectToHomePage();
                     // Redireccionar a otra página, etc.
                 },
                 error: function (xhr, status, error) {
@@ -194,6 +195,25 @@
                 // Si no se marca ninguno
                 return 8;
             }
+        }
+        function redirectToHomePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/home";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
         }
     </script>
 </body>

@@ -18,5 +18,19 @@ public class PacientViewController {
         // Retorna el nombre de la plantilla HTML (sin la extensión .html)
         // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
         return "appointment_detail_pacient";
-    }    
+    }   
+    
+    @GetMapping("/pacient/profile")
+    public String showProfileForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "pacient_profile";
+    }
+    
+    @GetMapping("/pacient/shedule")
+    public String showSheduleForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "agendar_paciente";
+    }     
 }
