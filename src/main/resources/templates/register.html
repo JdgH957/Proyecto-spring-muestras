@@ -111,18 +111,39 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 success: function (response) {
                     // Manejar la respuesta del backend
                     localStorage.setItem('jwtToken', response.token);
+                    localStorage.setItem('userId', response.userId);
                     console.log(response);
-                    // Redireccionar a otra página, etc.
-                    //if (role === "Encargado") {
-                    //    window.location.href = "/encargado";
-                    //} else {
-                    //    window.location.href = "/paciente";
-                    //}
+                    redirectToRolePage(role);
                 },
                 error: function (xhr, status, error) {
                     // Manejar errores
                     console.error(xhr.responseText);
                 }
+            });
+        }
+        function redirectToRolePage(role) {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl;
+
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            if (role === "Encargado") {
+                redirectUrl = "/register/doctor";
+            }else{
+                redirectUrl = "/register/patient";
+            }
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
             });
         }
     </script>

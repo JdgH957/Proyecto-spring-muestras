@@ -8,6 +8,7 @@ import java.util.Date;
 public class MedicalHistory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;    
     
@@ -24,8 +25,8 @@ public class MedicalHistory {
     @Column(name = "previous_residence_cities", columnDefinition = "TEXT")
     private String previousResidenceCities;
 
-    @Column(name = "current_symptoms")
-    private int currentSymptoms;
+    @Column(name = "current_symptoms", columnDefinition = "TEXT")
+    private String currentSymptoms;
 
     @Column(name = "contact_with_sick_people")
     private int contactWithSickPeople;
@@ -38,7 +39,7 @@ public class MedicalHistory {
     }
 
     // Constructor con todos los campos
-    public MedicalHistory(Patient patient, String medicalHistory, String currentResidenceCity, String previousResidenceCities, int currentSymptoms, int contactWithSickPeople, Date releaseDate) {
+    public MedicalHistory(Patient patient, String medicalHistory, String currentResidenceCity, String previousResidenceCities, String currentSymptoms, int contactWithSickPeople, Date releaseDate) {
         this.patient = patient;
         this.medicalHistory = medicalHistory;
         this.currentResidenceCity = currentResidenceCity;
@@ -81,11 +82,11 @@ public class MedicalHistory {
         this.previousResidenceCities = previousResidenceCities;
     }
 
-    public int getCurrentSymptoms() {
+    public String getCurrentSymptoms() {
         return currentSymptoms;
     }
 
-    public void setCurrentSymptoms(int currentSymptoms) {
+    public void setCurrentSymptoms(String currentSymptoms) {
         this.currentSymptoms = currentSymptoms;
     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -12,50 +12,59 @@
 </head>
 
 <body class="vh-100 gradient-custom">
-    <div class="container py-5 h-100">
-        <div class="row justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card bg-dark text-white" style="border-radius: 1rem;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-10 col-xl-8">
+                <div class="card bg-dark text-white" style="border-radius: 1rem; max-height: 700px;">
                     <div class="card-body p-5 text-center">
 
                         <div class="mb-md-5 mt-md-4 pb-5">
-
                             <h2 class="fw-bold mb-4 text-uppercase">Register Patient</h2>
                             <p class="text-white-50 mb-4">Please enter your information</p>
 
                             <form id="registerPatientForm">
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg" id="fullName" placeholder="Full Name">
-                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-lg" id="fullName" placeholder="Full Name">
+                                        </div>
 
-                                <div class="form-group">
-                                    <textarea class="form-control form-control-lg" id="medicalHistory" rows="3" placeholder="Medical History"></textarea>
-                                </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-lg" id="currentCity" placeholder="Current City of Residence">
+                                        </div>
 
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg" id="currentCity" placeholder="Current City of Residence">
-                                </div>
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg" id="previousCity" placeholder="Previous City of Residence">
-                                </div>
-
-                                <div class="form-group">
-                                    <textarea class="form-control form-control-lg" id="currentSymptoms" rows="3" placeholder="Current Symptoms"></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="contactInfected">
-                                        <label class="form-check-label" for="contactInfected">
-                                            Contact with Infected
-                                        </label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-lg" id="previousCity" placeholder="Previous City of Residence">
+                                        </div>
+                                        <label class="form-check-label text-left d-block" for="contactInfected">He tenido contacto con:</label>
+                                        <div class="form-group form-check text-left">
+                                            <input type="checkbox" class="form-check-input" id="leishmaniasis">
+                                            <label class="form-check-label" for="leishmaniasis">Alguien con leishmaniasis</label>
+                                        </div>
+                                        <div class="form-group form-check text-left">
+                                            <input type="checkbox" class="form-check-input" id="chagas">
+                                            <label class="form-check-label" for="chagas">Alguien con chagas</label>
+                                        </div>
+                                        <div class="form-group form-check text-left">
+                                            <input type="checkbox" class="form-check-input" id="gripe">
+                                            <label class="form-check-label" for="gripe">Alguien con gripe</label>
+                                        </div>
+                                        <div class="form-group form-check text-left">
+                                            <input type="checkbox" class="form-check-input" id="nadie">
+                                            <label class="form-check-label" for="nadie">Nadie</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <textarea class="form-control form-control-lg" id="medicalHistory" rows="12" placeholder="Medical History"></textarea>
+                                        </div>
+                                    </div>
+                                </div>                               
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-outline-light btn-lg btn-block" onclick="registerPatient()">Register</button>
                                     </div>
                                 </div>
-
-                                <br>
-
-                                <button type="button" class="btn btn-outline-light btn-lg btn-block" onclick="registerPatient()">Register</button>
                             </form>
                         </div>
                     </div>
@@ -70,28 +79,75 @@
 
     <script>
         function registerPatient() {
-            var fullName = document.getElementById("fullName").value;
-            var medicalHistory = document.getElementById("medicalHistory").value;
-            var currentCity = document.getElementById("currentCity").value;
-            var previousCity = document.getElementById("previousCity").value;
-            var currentSymptoms = document.getElementById("currentSymptoms").value;
-            var contactInfected = document.getElementById("contactInfected").checked;
+            var full_name = document.getElementById("fullName").value;
+            var medical_history = document.getElementById("medicalHistory").value;
+            var current_residence_city = document.getElementById("currentCity").value;
+            var previous_residence_city = document.getElementById("previousCity").value;
+            var cantact_with_sick_people = getContactInfectedValue();
+            var today = new Date();
+            var release_date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            var current_symptoms= "Ninguno";
+            var user_id = localStorage.getItem('userId');
+            console.log(user_id);
 
-            var data = {
-                fullName: fullName,
-                medicalHistory: medicalHistory,
-                currentCity: currentCity,
-                previousCity: previousCity,
-                currentSymptoms: currentSymptoms,
-                contactInfected: contactInfected
+            var data_patient = {
+                id: user_id,
+                fullName: full_name
             };
+
+
+            
+            var token = localStorage.getItem('jwtToken');
 
             // Enviar los datos del formulario al backend
             $.ajax({
                 type: "POST",
-                url: "/patient/register",
+                url: "/api/patient/",
                 contentType: "application/json",
-                data: JSON.stringify(data),
+                headers: { 'Authorization': 'Bearer ' + token },
+                data: JSON.stringify(data_patient),
+                success: function (response) {
+                    // Manejar la respuesta del backend
+                    console.log(response);
+                    registerMedicalHistory();
+                    // Redireccionar a otra página, etc.
+                },
+                error: function (xhr, status, error) {
+                    // Manejar errores
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+        function registerMedicalHistory() {
+            var token = localStorage.getItem('jwtToken');
+            var full_name = document.getElementById("fullName").value;
+            var medical_history = document.getElementById("medicalHistory").value;
+            var current_residence_city = document.getElementById("currentCity").value;
+            var previous_residence_city = document.getElementById("previousCity").value;
+            var cantact_with_sick_people = getContactInfectedValue();
+            var today = new Date();
+            var release_date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            var current_symptoms= "Ninguno";
+            var user_id = localStorage.getItem('userId');
+            var data_medical_history = {
+                patient: {
+                        id: user_id,
+                        fullName: full_name
+                        },
+                medicalHistory: medical_history,
+                currentResidenceCity: current_residence_city,
+                previousResidenceCities: previous_residence_city,
+                contactWithSickPeople: cantact_with_sick_people,
+                releaseDate: release_date,
+                currentSymptoms: current_symptoms
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/api/medical_history/",
+                contentType: "application/json",
+                headers: { 'Authorization': 'Bearer ' + token },
+                data: JSON.stringify(data_medical_history),
                 success: function (response) {
                     // Manejar la respuesta del backend
                     console.log(response);
@@ -102,6 +158,42 @@
                     console.error(xhr.responseText);
                 }
             });
+        }
+
+        function getContactInfectedValue() {
+            var leishmaniasis = document.getElementById("leishmaniasis").checked;
+            var chagas = document.getElementById("chagas").checked;
+            var gripe = document.getElementById("gripe").checked;
+            var nada = document.getElementById("nadie").checked;
+
+            if (nada) {
+                // Si se marcan los 3
+                return 8;
+            } else if (leishmaniasis && chagas && gripe) {
+                // Si se marca el primero y el segundo
+                return 7;
+            } else if (leishmaniasis && chagas) {
+                // Si se marca el primero y el segundo
+                return 4;
+            } else if (leishmaniasis && gripe) {
+                // Si se marca el primero y el tercero
+                return 5;
+            } else if (chagas && gripe) {
+                // Si se marca el segundo y el tercero
+                return 6;
+            } else if (leishmaniasis) {
+                // Si se marca solo el primero
+                return 1;
+            } else if (chagas) {
+                // Si se marca solo el segundo
+                return 2;
+            } else if (gripe) {
+                // Si se marca solo el tercero
+                return 3;
+            } else {
+                // Si no se marca ninguno
+                return 8;
+            }
         }
     </script>
 </body>

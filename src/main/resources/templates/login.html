@@ -70,7 +70,6 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 username: username,
                 password: password
             };
-
             // Enviar los datos del formulario al backend
             $.ajax({
                 type: "POST",
@@ -80,12 +79,70 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 success: function (response) {
                     // Manejar la respuesta del backend
                     localStorage.setItem('jwtToken', response.token);
+                    localStorage.setItem('userId', response.userId);
+                    // Verificar si hay un elemento llamado 'userType' en el localStorage
                     console.log(response);
+                    getUserRole();
+                    
                     // Redireccionar a otra página, etc.
                 },
                 error: function (xhr, status, error) {
                     // Manejar errores
                     console.error(xhr.responseText);
+                }
+            });
+        }
+        function redirectToHomePage() {
+            var token = localStorage.getItem('jwtToken');
+            var userType = localStorage.getItem('userType');
+            if (userType == 'patient'){
+                var redirectUrl = "/pacient/home";
+            } else if (userType == 'doctor'){
+                var redirectUrl = "/doctor/home";
+            }
+
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }
+        function getUserRole() {
+            var token = localStorage.getItem('jwtToken');
+            var userId = localStorage.getItem('userId');
+            console.log(userId);
+            var redirectUrl = "/api/patient/list/" + userId;
+            console.log(redirectUrl);
+            
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    console.log(data);
+                    // Verificar si se devolvieron datos
+                    if (data) {
+                        // Usuario es paciente
+                        localStorage.setItem('userType', 'patient');
+                    } else {
+                        // Usuario es médico
+                        localStorage.setItem('userType', 'doctor');
+                    }
+                    console.log(localStorage.getItem('userType'));
+                    redirectToHomePage();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
                 }
             });
         }

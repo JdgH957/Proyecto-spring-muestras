@@ -30,8 +30,12 @@ public class AuthService {
         UserDetails user = userRepository.findByUsername(request.getUsername())
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String token=jwtService.getToken(user);
+        User user_id = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found")); 
+        Long userId = user_id.getId();
         return AuthResponse.builder()
             .token(token)
+            .userId(userId)
             .build();
     }
     
@@ -44,9 +48,12 @@ public class AuthService {
             .build();
 
         userRepository.save(user);
+        
+        long user_id = user.getId();
 
         return AuthResponse.builder()
             .token(jwtService.getToken(user))
+            .userId(user_id)    
             .build();
     }    
 }

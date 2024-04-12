@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Paciente</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="vh-100 gradient-custom">
+    <div class="container-fluid h-100">
+        <div class="row flex-nowrap">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a href="#home" class="nav-link align-middle px-0">
+                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
+                        </li>
+                        <li>
+                            <a href="#schedule" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
+                        </li>
+                        <li>
+                            <a href="#notifications" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-bell"></i> <span class="ms-1 d-none d-sm-inline">Notifications</span> </a>
+                        </li>
+                    </ul>
+                    <hr>
+                </div>
+            </div>
+            <div class="col py-3">
+                <h2 class="fw-bold mb-4 text-uppercase">Dashboard del Paciente</h2>
+                <!-- Navegación de las pestañas para las citas -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
+                            aria-controls="pending" aria-selected="true">Citas Pendientes</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="future-tab" data-toggle="tab" href="#future" role="tab"
+                            aria-controls="future" aria-selected="false">Citas Futuras</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="finished-tab" data-toggle="tab" href="#finished" role="tab"
+                            aria-controls="finished" aria-selected="false">Citas Finalizadas</a>
+                    </li>
+                </ul>
+                <!-- ... [resto del código HTML] ... -->
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                        <!-- Lista de citas pendientes -->
+                        <table class="table table-striped" id="espera-appointments">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Médico</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se añadirán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="future" role="tabpanel" aria-labelledby="future-tab">
+                        <!-- Lista de citas futuras -->
+                        <table class="table table-striped" id="proxima-appointments">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Médico</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se añadirán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="finished" role="tabpanel" aria-labelledby="finished-tab">
+                        <!-- Lista de citas finalizadas -->
+                        <table class="table table-striped" id="finalizada-appointments">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Médico</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las filas se añadirán dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ... [resto del código HTML] ... -->
+                
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" async></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" async></script>    
+    <script>
+        function getUserAppointments(status) {
+        var token = localStorage.getItem('jwtToken');
+        var userId = localStorage.getItem('userId');
+
+        $.ajax({
+            type: "GET",
+            url: "/api/citas/list/",
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function(data) {
+                console.log(data);
+                var filteredAppointments = data.filter(function(appointment) {
+                    return appointment.patient.id === parseInt(userId);
+                });
+
+                var tableBody = $('#' + status + '-appointments tbody');
+                tableBody.empty();
+
+                var appointmentList = filteredAppointments.filter(function(appointment) {
+                    return appointment.status === status;
+                });
+                console.log(appointmentList);
+                // Guardar la lista de citas en localStorage
+                localStorage.setItem(status + 'Citas', JSON.stringify(appointmentList));
+
+                // Añadir citas a la tabla
+                appointmentList.forEach(function(appointment) {
+                    console.log("Añadiendo cita a la tabla: ", appointment);
+                    var row = `<tr>
+                                    <td>${appointment.id}</td>
+                                    <td>${appointment.date}</td>
+                                    <td>${appointment.doctor.fullName}</td>
+                                    <td>${appointment.status}</td>
+                                    <td><button type="button" onclick="redirectAppointmentDetails(${appointment.id})" class="btn btn-primary">Detalles</button></td>
+                                </tr>`;
+                    tableBody.append(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error al obtener las citas: ", xhr.responseText);
+            }
+        });
+    }
+
+    // Event handlers para cada pestaña
+    $('#pending-tab').click(function() { getUserAppointments('espera'); });
+    $('#future-tab').click(function() { getUserAppointments('proxima'); });
+    $('#finished-tab').click(function() { getUserAppointments('finalizada'); });
+
+
+        // Llamar a esta función al cargar la página para mostrar las citas pendientes inicialmente
+        $(document).ready(function() {
+            getUserAppointments('espera');
+        });
+        
+        function redirectAppointmentDetails(appointmentId) {
+            localStorage.setItem('appointmentId', appointmentId);
+            console.log('Función redirectAppointmentDetails llamada con el ID:', appointmentId);
+            // Aquí irá la lógica para redirigir a los detalles de la cita o abrir un modal
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl= "/pacient/home/detail"
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });            
+        }
+
+    </script>
+</body>
+</html>

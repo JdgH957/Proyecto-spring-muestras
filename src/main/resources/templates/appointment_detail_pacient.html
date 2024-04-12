@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de la Cita</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="vh-100 gradient-custom">
+    <div class="container-fluid h-100">
+        <div class="row flex-nowrap">
+            <!-- Barra lateral de navegación (sidebar) -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a href="#home" class="nav-link align-middle px-0">
+                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#profile" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
+                        </li>
+                        <li>
+                            <a href="#schedule" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
+                        </li>
+                        <li>
+                            <a href="#notifications" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-bell"></i> <span class="ms-1 d-none d-sm-inline">Notifications</span> </a>
+                        </li>
+                    </ul>
+                    <hr>
+                </div>
+            </div>
+            <!-- Columna principal con detalles de la cita -->
+            <div class="col py-3">
+                <h2 class="fw-bold mb-4 text-uppercase">Detalles de la Cita</h2>
+
+                <!-- Contenedor de detalles de la cita -->
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Información de la Cita</h3>
+                        <div class="card-text">
+                            <dl class="row">
+                                <dt class="col-sm-4">Nombre del paciente:</dt>
+                                <dd class="col-sm-8" id="patient-name"></dd>
+
+                                <dt class="col-sm-4">Nombre del médico:</dt>
+                                <dd class="col-sm-8" id="doctor-name"></dd>
+
+                                <dt class="col-sm-4">Estado de la cita:</dt>
+                                <dd class="col-sm-8" id="appointment-status"></dd>
+
+                                <dt class="col-sm-4">Fecha de la cita:</dt>
+                                <dd class="col-sm-8" id="appointment-date"></dd>
+
+                                <dt class="col-sm-4">Tipo de muestra recolectada:</dt>
+                                <dd class="col-sm-8" id="sample-type"></dd>
+
+                                <dt class="col-sm-4">Día de recolección:</dt>
+                                <dd class="col-sm-8" id="collection-day"></dd>
+
+                                <dt class="col-sm-4">Día de análisis:</dt>
+                                <dd class="col-sm-8" id="analysis-day"></dd>
+
+                                <dt class="col-sm-4">Estado de la muestra:</dt>
+                                <dd class="col-sm-8" id="sample-status"></dd>
+
+                                <dt class="col-sm-4">Historial médico del paciente:</dt>
+                                <dd class="col-sm-8" id="patient-history"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <!-- Debajo del contenedor de detalles de la cita -->
+                <div class="card-footer">
+                    <button id="delete-appointment-btn" onclick="deleteCita()" class="btn btn-danger" style="display: none;">Eliminar Cita</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inclusión de jQuery y Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" async></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" async></script> 
+    
+    <!-- Scripts para la lógica de la página -->
+    <script>
+        function getMuestra() {
+            var token = localStorage.getItem('jwtToken');
+            var appointmentId = localStorage.getItem('appointmentId');
+
+            $.ajax({
+                type: "GET",
+                url: "/api/samples/list/",
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data_muestra) {
+                    console.log(data_muestra);
+                    var muestra = data_muestra.find(function(muestra) {
+                    return muestra.appointment.id === parseInt(appointmentId)});
+                    console.log(muestra);
+                    $('#patient-name').text(muestra.appointment.patient.fullName);
+                    $('#doctor-name').text(muestra.appointment.doctor.fullName);
+                    $('#appointment-status').text(muestra.appointment.status.charAt(0).toUpperCase() + muestra.appointment.status.slice(1)); // Capitaliza el estado
+                    $('#appointment-date').text(new Date(muestra.appointment.date).toLocaleString());
+                    $('#sample-type').text(muestra.type);
+                    $('#collection-day').text(new Date(muestra.collectionDate).toLocaleString());
+                    $('#analysis-day').text(new Date(muestra.analysisDate).toLocaleString());
+                    $('#sample-status').text(muestra.status.charAt(0).toUpperCase() + muestra.status.slice(1)); // Capitaliza el estado  
+                    $('#patient-history').text(localStorage.getItem('historial'));
+                    if (muestra.appointment.status === "proxima") {
+                        $('#delete-appointment-btn').show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al obtener las citas: ", xhr.responseText);
+                }
+            });
+        }    
+        function getHistorialMedico() {
+            var token = localStorage.getItem('jwtToken');
+            var userId = localStorage.getItem('userId');
+
+            $.ajax({
+                type: "GET",
+                url: "/api/medical_history/list/",
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data_medica) {
+                    console.log(data_medica);
+                    var historial = data_medica.find(function(historial) {
+                    return historial.patient.id === parseInt(userId)});
+                    console.log(historial);
+                    localStorage.setItem('medicalHistoryId', historial.id);
+                    localStorage.setItem('historial', historial.medicalHistory);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al obtener las citas: ", xhr.responseText);
+                }
+            });
+        }  
+        function deleteCita() {
+            var token = localStorage.getItem('jwtToken');
+            var appointmentId = localStorage.getItem('appointmentId');
+
+            $.ajax({
+                type: "DELETE",
+                url: "/api/samples/"+appointmentId,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    console.log(data);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al eliminar la cita: ", xhr.responseText);
+                }
+            });
+        }  
+        function redirectToIndexPage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/home";
+            $.ajax({
+                    type: "GET",
+                    url: redirectUrl,
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function(data) {
+                        document.open();
+                        document.write(data);
+                        document.close();
+                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Access denied: ", xhr.responseText);
+                    }
+            });
+        }    
+        $(document).ready(function() {
+            getHistorialMedico();
+            getMuestra();
+        }); 
+    </script>
+</body>
+</html>
