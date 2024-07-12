@@ -8,35 +8,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="vh-100 gradient-custom">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <img src="/tu-imagen.png" alt="Logo" style="height: 40px;">
+            </span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="redirectToNotificationPage()">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container-fluid h-100">
-        <div class="row flex-nowrap">
+        <div class="row flex-nowrap h-100">
             <!-- Barra lateral de navegación (sidebar) -->
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#home" onclick="redirectToIndexPage()" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
-                        </li>
-                        <li>
-                            <a href="#schedule" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="#home" onclick="redirectToIndexPage()" class="nav-link align-middle px-0">
+                            <i class="fas fa-home"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-user"></i> <span class="ms-1 d-none d-sm-inline">Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
+                    </li>
+                </ul>
+                <hr>
             </div>
             <!-- Columna principal con detalles de la cita -->
             <div class="col py-3">
                 <h2 class="fw-bold mb-4 text-uppercase">Detalles de la Cita</h2>
 
                 <!-- Contenedor de detalles de la cita -->
-                <div class="card">
+                <div class="card shadow mb-4">
                     <div class="card-body">
                         <h3 class="card-title">Información de la Cita</h3>
                         <div class="card-text">
@@ -70,10 +93,9 @@
                             </dl>
                         </div>
                     </div>
-                </div>
-                <!-- Debajo del contenedor de detalles de la cita -->
-                <div class="card-footer">
-                    <button id="delete-appointment-btn" onclick="deleteMuestra()" class="btn btn-danger" style="display: none;">Eliminar Cita</button>
+                    <div class="card-footer text-right">
+                        <button id="delete-appointment-btn" onclick="deleteMuestra()" class="btn btn-danger" style="display: none;">Eliminar Cita</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,9 +119,19 @@
                 success: function(data_muestra) {
                     console.log(data_muestra);
                     var muestra = data_muestra.find(function(muestra) {
-                    return muestra.appointment.id === parseInt(appointmentId)});
+                        return muestra.appointment.id === parseInt(appointmentId)
+                    });
                     console.log(muestra);
                     localStorage.setItem('muestraId', muestra.id);
+                    let user_medico = {
+                                            "id": muestra.appointment.doctor.user.id,
+                                            "username": muestra.appointment.doctor.user.username,
+                                            "password": muestra.appointment.doctor.user.password,
+                                            "email": muestra.appointment.doctor.user.email,
+                                            "role": muestra.appointment.doctor.user.role
+                                        };
+                    localStorage.setItem('user_medico', JSON.stringify(user_medico));
+                                        console.log(user_medico);
                     $('#patient-name').text(muestra.appointment.patient.fullName);
                     $('#doctor-name').text(muestra.appointment.doctor.fullName);
                     $('#appointment-status').text(muestra.appointment.status.charAt(0).toUpperCase() + muestra.appointment.status.slice(1)); // Capitaliza el estado
@@ -129,7 +161,8 @@
                 success: function(data_medica) {
                     console.log(data_medica);
                     var historial = data_medica.find(function(historial) {
-                    return historial.patient.id === parseInt(userId)});
+                        return historial.patient.id === parseInt(userId)
+                    });
                     console.log(historial);
                     localStorage.setItem('medicalHistoryId', historial.id);
                     localStorage.setItem('historial', historial.medicalHistory);
@@ -165,10 +198,41 @@
                 headers: { 'Authorization': 'Bearer ' + token },
                 success: function(data) {
                     alert('Cita eliminada con éxito.');
-                    redirectToIndexPage();
+                    createNotification();
                 },
                 error: function(xhr) {
                     alert('Error al eliminar la cita: ' + xhr.responseText);
+                }
+            });
+        }
+
+        function createNotification() {
+            var token = localStorage.getItem('jwtToken');
+            senderId = localStorage.getItem('userId');
+            user_medico = JSON.parse(localStorage.getItem('user_medico'));
+            data = {
+                        "user": user_medico,
+                        "senderId": senderId,
+                        "message": "Un paciente ha cancelado una cita con usted. Por favor, revise su agenda.",
+                        "type": "apointment",
+                        "date": new Date().toISOString()
+                    };
+
+            $.ajax({
+                url: "/api/notifications/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                data: JSON.stringify(data),
+                success: function(response) {
+                    console.log('Notificacion creada con éxito:', response);
+                    redirectToIndexPage();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al crear la Notificacion:', xhr.responseText);
+                    alert('Error al crear la Notificacion: ' + xhr.responseText);
                 }
             });
         }
@@ -177,20 +241,85 @@
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/pacient/home";
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
         }    
+        function redirectToProfilePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/profile";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+        function redirectToShedulePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/shedule";
+            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+
+        function redirectToNotificationPage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/notificaciones";
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+
+        function logout() {
+            // Borrar todo el localStorage
+            localStorage.clear();
+            // Redirección después de logout si es necesario
+            window.location.href = '/landing-page';
+        }
+
         $(document).ready(function() {
             getHistorialMedico();
             getMuestra();

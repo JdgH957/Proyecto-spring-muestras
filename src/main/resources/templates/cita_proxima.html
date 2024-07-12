@@ -8,33 +8,57 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="vh-100 gradient-custom">
-    <div class="container-fluid h-100">
-        <div class="row flex-nowrap">
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#home" onclick="redirectToIndexPage()" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <img src="/tu-imagen.png" alt="Logo" style="height: 40px;">
+            </span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
+    <div class="container-fluid h-100">
+        <div class="row flex-nowrap h-100">
+            <!-- Barra lateral de navegación (sidebar) -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="#home" onclick="redirectToIndexPage()" class="nav-link align-middle px-0">
+                            <i class="fas fa-home"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-user"></i> <span class="ms-1 d-none d-sm-inline">Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span>
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+            </div>
+            <!-- Contenido principal: Detalles de la cita -->
             <div class="col py-3">
                 <h2 class="fw-bold mb-4 text-uppercase">Detalles de la Cita</h2>
-                <div class="card">
+                <div class="card shadow mb-4">
                     <div class="card-body">
                         <h3 class="card-title">Información de la Cita</h3>
                         <div class="card-text">
@@ -57,15 +81,15 @@
                                 <dd class="col-sm-8" id="current_city"></dd>
                                 <dt class="col-sm-4">Ciudad anterior de residencia del paciente:</dt>
                                 <dd class="col-sm-8" id="previous_city"></dd>
-                                <dt class="col-sm-4">Sintomas del paciente:</dt>
+                                <dt class="col-sm-4">Síntomas del paciente:</dt>
                                 <dd class="col-sm-8" id="current_symptoms"></dd>
                             </dl>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <button id="sample-taken-btn" class="btn btn-primary" onclick="getAppointment()">Muestra Tomada</button>
-                    <button id="delete-appointment-btn" onclick="deleteMuestra()" class="btn btn-danger">Eliminar Cita</button>
+                    <div class="card-footer text-right">
+                        <button id="sample-taken-btn" class="btn btn-primary" onclick="getAppointment()">Muestra Tomada</button>
+                        <button id="delete-appointment-btn" onclick="deleteMuestra()" class="btn btn-danger">Eliminar Cita</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,17 +111,25 @@
                 url: "/api/samples/list/",
                 headers: { 'Authorization': 'Bearer ' + token },
                 success: function(data_muestra) {
-                    console.log(data_muestra);
                     var muestra = data_muestra.find(function(muestra) {
-                    return muestra.appointment.id === parseInt(appointmentId)});
-                    console.log(muestra);
+                        return muestra.appointment.id === parseInt(appointmentId);
+                    });
                     localStorage.setItem('muestraId', muestra.id);
+                    let user_paciente = {
+                                            "id": muestra.appointment.patient.user.id,
+                                            "username": muestra.appointment.patient.user.username,
+                                            "password": muestra.appointment.patient.user.password,
+                                            "email": muestra.appointment.patient.user.email,
+                                            "role": muestra.appointment.patient.user.role
+                                        };
+                                        console.log(user_paciente);
+                    localStorage.setItem('user_paciente', JSON.stringify(user_paciente));
                     $('#patient-name').text(muestra.appointment.patient.fullName);
                     $('#doctor-name').text(muestra.appointment.doctor.fullName);
                     $('#appointment-status').text(muestra.appointment.status.charAt(0).toUpperCase() + muestra.appointment.status.slice(1)); // Capitaliza el estado
                     $('#appointment-date').text(new Date(muestra.appointment.date).toLocaleString());
                     $('#sample-type').text(muestra.type);
-                    $('#collection-day').text(new Date(muestra.collectionDate).toLocaleString());
+                    $('#collection-day').val(muestra.collectionDate ? new Date(muestra.collectionDate).toISOString().split('T')[0] : '');
                     $('#patient-history').text(localStorage.getItem('historial'));
                     $('#current_city').text(localStorage.getItem('ciudadActual'));
                     $('#previous_city').text(localStorage.getItem('ciudadAnterior'));
@@ -107,7 +139,8 @@
                     console.error("Error al obtener las citas: ", xhr.responseText);
                 }
             });
-        }    
+        }
+
         function getHistorialMedico() {
             var token = localStorage.getItem('jwtToken');
             var patientId = localStorage.getItem('patientId');
@@ -117,10 +150,9 @@
                 url: "/api/medical_history/list/",
                 headers: { 'Authorization': 'Bearer ' + token },
                 success: function(data_medica) {
-                    console.log(data_medica);
                     var historial = data_medica.find(function(historial) {
-                    return historial.patient.id === parseInt(patientId)});
-                    console.log(historial);
+                        return historial.patient.id === parseInt(patientId);
+                    });
                     localStorage.setItem('medicalHistoryId', historial.id);
                     localStorage.setItem('historial', historial.medicalHistory);
                     localStorage.setItem('ciudadActual', historial.currentResidenceCity);
@@ -128,10 +160,11 @@
                     localStorage.setItem('sintomas', historial.currentSymptoms);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Error al obtener las citas: ", xhr.responseText);
+                    console.error("Error al obtener el historial médico: ", xhr.responseText);
                 }
             });
         }
+
         function deleteMuestra() {
             var token = localStorage.getItem('jwtToken');
             var muestraId = localStorage.getItem('muestraId');
@@ -144,10 +177,11 @@
                     deleteCita();
                 },
                 error: function(xhr) {
-                    alert('Error al eliminar la cita: ' + xhr.responseText);
+                    alert('Error al eliminar la muestra: ' + xhr.responseText);
                 }
             });
-        }  
+        }
+
         function deleteCita() {
             var token = localStorage.getItem('jwtToken');
             var appointmentId = localStorage.getItem('appointmentId');
@@ -158,163 +192,202 @@
                 headers: { 'Authorization': 'Bearer ' + token },
                 success: function(data) {
                     alert('Cita eliminada con éxito.');
-                    redirectToIndexPage();
+                    createNotification();
                 },
                 error: function(xhr) {
                     alert('Error al eliminar la cita: ' + xhr.responseText);
                 }
             });
         }
-        function getAppointment() {
-            var appointmentId = localStorage.getItem('appointmentId');
-            console.log('Función getAppointment llamada con el ID:', appointmentId);
+
+        function createNotification() {
             var token = localStorage.getItem('jwtToken');
+            senderId = localStorage.getItem('userId');
+            var user_paciente = JSON.parse(localStorage.getItem('user_paciente'));
+            data = {
+                        "user": user_paciente,
+                        "senderId": senderId,
+                        "message": "Un medico ha cancelado una cita con usted. Por favor, revise su agenda.",
+                        "type": "apointment",
+                        "date": new Date().toISOString()
+                    };
+
             $.ajax({
-                type: "GET",
-                url: "/api/citas/list/"+appointmentId,
-                headers: { 'Authorization': 'Bearer ' + token },
-                success: function(data_appointment) {
-                    localStorage.setItem('appointmentId', appointmentId);
-                    console.log(data_appointment);
-                    data_appointment.status = "espera";
-                    delete data_appointment.doctor.user;
-                    delete data_appointment.patient.user;
-                    console.log(data_appointment);
-                    updateAppointment(data_appointment);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error al cargar el perfil: ", xhr.responseText);
-                }
-            });
-        } 
-        function updateAppointment(data) {
-            var token = localStorage.getItem('jwtToken'); // Asumiendo que guardas el token JWT en localStorage
-            console.log(data);
-            $.ajax({
-                url: "/api/citas/" , // Asegúrate de que la URL es correcta y corresponde a la API del servidor
-                type: "PUT",
-                contentType: "application/json", // Asegúrate de enviar el encabezado de contenido correcto
+                url: "/api/notifications/",
+                type: "POST",
+                contentType: "application/json",
                 headers: {
-                    'Authorization': 'Bearer ' + token  // Usar Bearer auth, asumiendo que es requerido por tu backend
+                    'Authorization': 'Bearer ' + token
                 },
-                data: JSON.stringify(data), // Convertir userData a JSON
+                data: JSON.stringify(data),
                 success: function(response) {
-                    console.log('Cita actualizado con éxito:', response);
-                    getSample();
-                    // Opcional: Redirigir o actualizar UI según sea necesario
+                    console.log('Notificacion creada con éxito:', response);
+                    redirectToIndexPage();
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error al actualizar el perfil:', xhr.responseText);
-                    alert('Error al actualizar el perfil: ' + xhr.responseText);
+                    console.error('Error al crear la Notificacion:', xhr.responseText);
+                    alert('Error al crear la Notificacion: ' + xhr.responseText);
                 }
             });
         }
+
+        function getAppointment() {
+            var appointmentId = localStorage.getItem('appointmentId');
+            var token = localStorage.getItem('jwtToken');
+
+            $.ajax({
+                type: "GET",
+                url: "/api/citas/list/" + appointmentId,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data_appointment) {
+                    data_appointment.status = "espera";
+                    delete data_appointment.doctor.user;
+                    delete data_appointment.patient.user;
+                    updateAppointment(data_appointment);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al cargar la cita: ", xhr.responseText);
+                }
+            });
+        }
+
+        function updateAppointment(data) {
+            var token = localStorage.getItem('jwtToken');
+
+            $.ajax({
+                url: "/api/citas/",
+                type: "PUT",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                data: JSON.stringify(data),
+                success: function(response) {
+                    getSample();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al actualizar la cita:', xhr.responseText);
+                    alert('Error al actualizar la cita: ' + xhr.responseText);
+                }
+            });
+        }
+
         function getSample() {
             var token = localStorage.getItem('jwtToken');
             var appointmentId = localStorage.getItem('appointmentId');
             var newCollectionDate = $('#collection-day').val();
-            console.log(newCollectionDate)
+
             $.ajax({
                 type: "GET",
                 url: "/api/samples/list/",
                 headers: { 'Authorization': 'Bearer ' + token },
                 success: function(data_muestra) {
-                    console.log(data_muestra);
                     var muestra = data_muestra.find(function(muestra) {
-                    return muestra.appointment.id === parseInt(appointmentId)});
+                        return muestra.appointment.id === parseInt(appointmentId);
+                    });
                     muestra.collectionDate = newCollectionDate;
                     delete muestra.appointment.patient.user;
                     delete muestra.appointment.doctor.user;
-                    console.log(muestra);
                     updateSample(muestra);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Error al cargar el perfil: ", xhr.responseText);
+                    console.error("Error al cargar la muestra: ", xhr.responseText);
                 }
             });
         }
+
         function updateSample(data) {
-            var token = localStorage.getItem('jwtToken'); // Asumiendo que guardas el token JWT en localStorage
-            console.log(data);
+            var token = localStorage.getItem('jwtToken');
+
             $.ajax({
-                url: "/api/samples/" , // Asegúrate de que la URL es correcta y corresponde a la API del servidor
+                url: "/api/samples/",
                 type: "PUT",
-                contentType: "application/json", // Asegúrate de enviar el encabezado de contenido correcto
+                contentType: "application/json",
                 headers: {
-                    'Authorization': 'Bearer ' + token  // Usar Bearer auth, asumiendo que es requerido por tu backend
+                    'Authorization': 'Bearer ' + token
                 },
-                data: JSON.stringify(data), // Convertir userData a JSON
+                data: JSON.stringify(data),
                 success: function(response) {
-                    console.log('Muestra actualizado con éxito:', response);
                     redirectToIndexPage();
-                    // Opcional: Redirigir o actualizar UI según sea necesario
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error al actualizar el perfil:', xhr.responseText);
-                    alert('Error al actualizar el perfil: ' + xhr.responseText);
+                    console.error('Error al actualizar la muestra:', xhr.responseText);
+                    alert('Error al actualizar la muestra: ' + xhr.responseText);
                 }
             });
-        }  
+        }
+
         function redirectToIndexPage() {
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/doctor/home";
+
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
-        }    
+        }
+
         function redirectToProfilePage() {
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/doctor/profile";
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
         }
+
         function redirectToShedulePage() {
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/doctor/shedule";
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
-        } 
+        }
+
         $(document).ready(function() {
             getHistorialMedico();
             getMuestra();
-        }); 
+        });
+
+        function logout() {
+            // Borrar todo el localStorage
+            localStorage.clear();
+            // Redirección después de logout si es necesario
+            window.location.href = '/landing-page';
+        }
     </script>
 </body>
 </html>

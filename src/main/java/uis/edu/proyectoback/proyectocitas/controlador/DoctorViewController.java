@@ -13,6 +13,27 @@ public class DoctorViewController {
         return "index_doctor";
     } 
     
+    @GetMapping("/landing-page")
+    public String showLandingPageForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "landing_page";
+    } 
+    
+    @GetMapping("/doctor/notificaciones")
+    public String showNotificacionesDoctorForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "notificacion_medico";
+    }
+    
+    @GetMapping("/landing-page/info")
+    public String showInfoForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "info";
+    } 
+    
     @GetMapping("/doctor/pending/detail")
     public String showDetailAppointmentPendingForm() {
         // Retorna el nombre de la plantilla HTML (sin la extensión .html)

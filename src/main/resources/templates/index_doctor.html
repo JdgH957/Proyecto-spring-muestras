@@ -7,37 +7,69 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .scrollable-div {
+                max-height: 80vh; /* Ajusta esto según tus necesidades */
+                overflow-y: auto;
+            }
+        </style>
 </head>
 <body class="vh-100 gradient-custom">
-    <div class="container-fluid h-100">
-        <div class="row flex-nowrap">
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
-                        </li>
-                        <li>
-                            <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <img src="/tu-imagen.png" alt="Logo" style="height: 40px;">
+            </span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="redirectToNotificationPage()">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid h-100">
+        <div class="row flex-nowrap h-100">
+            <!-- Barra lateral de navegación (sidebar) -->
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
+                            <i class="fas fa-home"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-user"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
+                    </li>
+                </ul>
+                <hr>
+            </div>
+            <!-- Contenido principal del dashboard -->
             <div class="col py-3">
-                <h2 class="fw-bold mb-4 text-uppercase">Dashboard del Encargado</h2>
+                <h2 class="fw-bold mb-4 text-uppercase">MIS CITAS</h2>
                 <!-- Navegación de las pestañas para las citas -->
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="pending-tab" data-toggle="tab" href="#pending" role="tab"
-                            aria-controls="pending" aria-selected="true">Citas Pendientes</a>
+                            aria-controls="pending" aria-selected="true">Citas Pendientes de Muestra</a>
                     </li>
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="future-tab" data-toggle="tab" href="#future" role="tab"
@@ -48,63 +80,63 @@
                             aria-controls="finished" aria-selected="false">Citas Finalizadas</a>
                     </li>
                 </ul>
-                <!-- ... [resto del código HTML] ... -->
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
-                        <!-- Lista de citas pendientes -->
-                        <table class="table table-striped" id="espera-appointments">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Paciente</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Las filas se añadirán dinámicamente aquí -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="future" role="tabpanel" aria-labelledby="future-tab">
-                        <!-- Lista de citas futuras -->
-                        <table class="table table-striped" id="proxima-appointments">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Médico</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Las filas se añadirán dinámicamente aquí -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="finished" role="tabpanel" aria-labelledby="finished-tab">
-                        <!-- Lista de citas finalizadas -->
-                        <table class="table table-striped" id="finalizada-appointments">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha</th>
-                                    <th>Médico</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Las filas se añadirán dinámicamente aquí -->
-                            </tbody>
-                        </table>
+                <div class="container">
+                    <div class="col py-3 scrollable-div">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                                <!-- Lista de citas pendientes -->
+                                <table class="table table-striped mt-4" id="espera-appointments">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Fecha</th>
+                                            <th>Paciente</th>
+                                            <th>Estado</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Las filas se añadirán dinámicamente aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="future" role="tabpanel" aria-labelledby="future-tab">
+                                <!-- Lista de citas futuras -->
+                                <table class="table table-striped mt-4" id="proxima-appointments">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Fecha</th>
+                                            <th>Paciente</th>
+                                            <th>Estado</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Las filas se añadirán dinámicamente aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="finished" role="tabpanel" aria-labelledby="finished-tab">
+                                <!-- Lista de citas finalizadas -->
+                                <table class="table table-striped mt-4" id="finalizada-appointments">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Fecha</th>
+                                            <th>Paciente</th>
+                                            <th>Estado</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Las filas se añadirán dinámicamente aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- ... [resto del código HTML] ... -->
-                
             </div>
         </div>
     </div>
@@ -113,76 +145,64 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" async></script>    
     <script>
         function getUserAppointments(status) {
-        var token = localStorage.getItem('jwtToken');
-        var userId = localStorage.getItem('userId');
+            var token = localStorage.getItem('jwtToken');
+            var userId = localStorage.getItem('userId');
 
-        $.ajax({
-            type: "GET",
-            url: "/api/citas/list/",
-            headers: { 'Authorization': 'Bearer ' + token },
-            success: function(data) {
-                console.log(data);
-                var filteredAppointments = data.filter(function(appointment) {
-                    return appointment.doctor?.id === parseInt(userId);
-                });
-
-                var tableBody = $('#' + status + '-appointments tbody');
-                tableBody.empty();
-
-                var appointmentList = filteredAppointments.filter(function(appointment) {
-                    return appointment.status === status;return appointment.doctor?.id === parseInt(userId);
-                });
-                console.log(appointmentList);
-                // Guardar la lista de citas en localStorage
-                localStorage.setItem(status + 'Citas', JSON.stringify(appointmentList));
-
-                // Añadir citas a la tabla
-                appointmentList.forEach(function(appointment) {
-                    console.log("Añadiendo cita a la tabla: ", appointment);
-                    // Configura la fecha al formato local deseado
-                    var formattedDate = new Date(appointment.date).toLocaleString('es-CO', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
+            $.ajax({
+                type: "GET",
+                url: "/api/citas/list/",
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    var filteredAppointments = data.filter(function(appointment) {
+                        return appointment.doctor?.id === parseInt(userId);
                     });
-                    var row = `<tr>
+
+                    var tableBody = $('#' + status + '-appointments tbody');
+                    tableBody.empty();
+
+                    var appointmentList = filteredAppointments.filter(function(appointment) {
+                        return appointment.status === status;
+                    });
+
+                    appointmentList.forEach(function(appointment) {
+                        var formattedDate = new Date(appointment.date).toLocaleString('es-CO', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        var row = `<tr>
                                     <td>${appointment.id}</td>
                                     <td>${formattedDate}</td>
                                     <td>${appointment.patient.fullName}</td>
                                     <td>${appointment.status}</td>
                                     <td><button type="button" onclick="redirectAppointmentDetails(${appointment.id}, '${status}', ${appointment.patient.id})" class="btn btn-primary">Detalles</button></td>
                                 </tr>`;
-                    tableBody.append(row);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Error al obtener las citas: ", xhr.responseText);
-            }
-        });
-    }
+                        tableBody.append(row);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al obtener las citas: ", xhr.responseText);
+                }
+            });
+        }
 
-        // Event handlers para cada pestaña
         $('#pending-tab').click(function() { getUserAppointments('espera'); });
         $('#future-tab').click(function() { getUserAppointments('proxima'); });
         $('#finished-tab').click(function() { getUserAppointments('finalizada'); });
 
-
-        // Llamar a esta función al cargar la página para mostrar las citas pendientes inicialmente
         $(document).ready(function() {
             getUserAppointments('espera');
         });
         
         function redirectAppointmentDetails(appointmentId, type, patientId) {
-            console.log('Función redirectAppointmentDetails llamada con el ID:', appointmentId);
             localStorage.setItem('appointmentId', appointmentId);
             localStorage.setItem('patientId', patientId);
             var token = localStorage.getItem('jwtToken');
             var redirectUrl;
 
-            // Decidir la URL basada en el tipo de cita
             switch (type) {
                 case 'espera':
                     redirectUrl = "/doctor/pending/detail";
@@ -194,7 +214,7 @@
                     redirectUrl = "/doctor/finished/detail";
                     break;
                 default:
-                    redirectUrl = "/doctor/home/detail"; // URL por defecto o para casos no previstos
+                    redirectUrl = "/doctor/home/detail";
             }
 
             $.ajax({
@@ -213,66 +233,90 @@
             });
         }
 
-
         function redirectToHomePage() {
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/doctor/home";
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
         }
 
         function redirectToProfilePage() {
             var token = localStorage.getItem('jwtToken');
             var redirectUrl = "/doctor/profile";
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
+
             $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
-            });
-        }
-        function redirectToShedulePage() {
-            var token = localStorage.getItem('jwtToken');
-            var redirectUrl = "/doctor/shedule";
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
-            $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
             });
         }
 
+        function redirectToShedulePage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/shedule";
+
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+        function logout() {
+            // Borrar todo el localStorage
+            localStorage.clear();
+            // Redirección después de logout si es necesario
+            window.location.href = '/landing-page';
+        }
+
+        function redirectToNotificationPage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/doctor/notificaciones";
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
     </script>
 </body>
 </html>

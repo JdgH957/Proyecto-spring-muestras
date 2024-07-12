@@ -28,7 +28,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorizeRequests -> 
                 authorizeRequests
-                    .antMatchers("/auth/**", "/login", "/register").permitAll()
+                    .antMatchers("/auth/**", "/login", "/register", "/landing-page", "/landing-page/info", "/static/**", "/tu-imagen.png").permitAll() // Permitir acceso a recursos estáticos
                     .anyRequest().authenticated()
             )
             .sessionManagement(sessionManager->
@@ -39,4 +39,3 @@ public class SecurityConfig {
             .build();
     }
 }
-

@@ -1,66 +1,64 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <!-- Enlace a Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Enlaces a los iconos de Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background: linear-gradient(to right, #38b2ac, #4299e1, #805ad5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
-<body class="vh-100 gradient-custom">
-    <div class="container py-5 h-100">
-        <div class="row justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                <div class="card bg-dark text-white" style="border-radius: 1rem;">
-                    <div class="card-body p-5 text-center">
-
-                        <div class="mb-md-5 mt-md-4 pb-5">
-
-                            <h2 class="fw-bold mb-4 text-uppercase">Login</h2>
-                            <p class="text-white-50 mb-4">Please enter your username and password</p>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h2 class="card-title mb-4">Login</h2>
+                            <p class="text-muted mb-4">Please enter your username and password</p>
 
                             <form id="loginForm">
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-lg" id="username"
+                                    <input type="text" class="form-control bg-secondary text-white" id="username"
                                         placeholder="Username">
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="password" class="form-control form-control-lg" id="password"
+                                    <input type="password" class="form-control bg-secondary text-white" id="password"
                                         placeholder="Password">
                                 </div>
 
-                                <br>
-
-                                <button type="button" class="btn btn-outline-light btn-lg btn-block" onclick="login()">Login</button>
+                                <button type="button" class="btn btn-primary btn-block" onclick="login()">Login</button>
                             </form>
-
-
-
                         </div>
 
-                        <div>
-                            <p class="mb-0">Don't have an account? <a  th:href="@{/register}"
-                                    class="text-white-50 fw-bold">Sign Up</a>
-                            </p>
+                        <div class="text-center mt-4">
+                            <p class="text-muted">Don't have an account? <a th:href="@{/register}"
+                                    class="text-primary font-weight-bold">Sign Up</a></p>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Scripts de Bootstrap y jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <!-- Scripts de jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         function login() {
             var username = document.getElementById("username").value;
@@ -77,71 +75,51 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 success: function (response) {
-                    // Manejar la respuesta del backend
                     localStorage.setItem('jwtToken', response.token);
                     localStorage.setItem('userId', response.userId);
-                    // Verificar si hay un elemento llamado 'userType' en el localStorage
-                    console.log(response);
                     getUserRole();
-                    
-                    // Redireccionar a otra página, etc.
                 },
                 error: function (xhr, status, error) {
-                    // Manejar errores
                     console.error(xhr.responseText);
                 }
             });
         }
+
         function redirectToHomePage() {
             var token = localStorage.getItem('jwtToken');
             var userType = localStorage.getItem('userType');
-            if (userType == 'patient'){
-                var redirectUrl = "/pacient/home";
-            } else if (userType == 'doctor'){
-                var redirectUrl = "/doctor/home";
-            }
+            var redirectUrl = userType == 'patient' ? "/pacient/home" : "/doctor/home";
 
-            // Ejemplo de cómo añadir el token en el encabezado de la solicitud
-            $.ajax({
-                    type: "GET",
-                    url: redirectUrl,
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function(data) {
-                        document.open();
-                        document.write(data);
-                        document.close();
-                        window.history.pushState({path: redirectUrl}, '', redirectUrl);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Access denied: ", xhr.responseText);
-                    }
-            });
-        }
-        function getUserRole() {
-            var token = localStorage.getItem('jwtToken');
-            var userId = localStorage.getItem('userId');
-            console.log(userId);
-            var redirectUrl = "/api/patient/list/" + userId;
-            console.log(redirectUrl);
-            
             $.ajax({
                 type: "GET",
                 url: redirectUrl,
                 headers: { 'Authorization': 'Bearer ' + token },
-                success: function(data) {
-                    console.log(data);
-                    // Verificar si se devolvieron datos
-                    if (data) {
-                        // Usuario es paciente
-                        localStorage.setItem('userType', 'patient');
-                    } else {
-                        // Usuario es médico
-                        localStorage.setItem('userType', 'doctor');
-                    }
-                    console.log(localStorage.getItem('userType'));
+                success: function (data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+
+        function getUserRole() {
+            var token = localStorage.getItem('jwtToken');
+            var userId = localStorage.getItem('userId');
+            var redirectUrl = "/api/patient/list/" + userId;
+
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function (data) {
+                    localStorage.setItem('userType', data ? 'patient' : 'doctor');
                     redirectToHomePage();
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Access denied: ", xhr.responseText);
                 }
             });

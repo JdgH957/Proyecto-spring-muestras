@@ -13,6 +13,13 @@ public class PacientViewController {
         return "index_pacient";
     }
     
+    @GetMapping("/pacient/notificaciones")
+    public String showNotificacionesPacientHomeForm() {
+        // Retorna el nombre de la plantilla HTML (sin la extensión .html)
+        // Asegúrate de que el archivo se encuentra bajo src/main/resources/templates
+        return "notificaciones_paciente";
+    }
+    
     @GetMapping("/pacient/home/detail")
     public String showDetailAppointmentHomeForm() {
         // Retorna el nombre de la plantilla HTML (sin la extensión .html)

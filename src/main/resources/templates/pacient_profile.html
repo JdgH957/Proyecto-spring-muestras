@@ -3,70 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles de la Cita</title>
+    <title>Perfil</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .scrollable-div {
+            max-height: 80vh; /* Ajusta esto según tus necesidades */
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="vh-100 gradient-custom">
-    <div class="container-fluid h-100">
-        <div class="row flex-nowrap">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <img src="/tu-imagen.png" alt="Logo" style="height: 40px;">
+            </span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="redirectToNotificationPage()">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row flex-nowrap h-80">
             <!-- Barra lateral de navegación (sidebar) -->
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                        <li class="nav-item">
-                            <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
-                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> </a>
-                        </li>
-                        <li>
-                            <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
-                                <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span></a>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="#home" onclick="redirectToHomePage()" class="nav-link align-middle px-0">
+                            <i class="fas fa-home"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#profile" onclick="redirectToProfilePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-user"></i> <span class="ms-1 d-none d-sm-inline">Profile</span> 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#schedule" onclick="redirectToShedulePage()" class="nav-link px-0 align-middle">
+                            <i class="fas fa-calendar"></i> <span class="ms-1 d-none d-sm-inline">Schedule</span>
+                        </a>
+                    </li>
+                </ul>
+                <hr>
             </div>
             <!-- Columna principal para el perfil -->
-            <div class="col py-3">
-                <h2 class="fw-bold mb-4 text-uppercase">Perfil del Usuario</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <form id="profileForm" onsubmit="event.preventDefault(); getUserProfile();">
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label">Nombre:</label>
-                                <input type="text" class="form-control" id="fullName" required readonly>
-                            </div>  
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Nombre de Usuario:</label>
-                                <input type="text" class="form-control" id="username" required readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email:</label>
-                                <input type="email" class="form-control" id="email" required readonly>
-                            </div>                            
-                            <div class="mb-3">
-                                <label for="currentCity" class="form-label">Ciudad de Residencia Actual:</label>
-                                <input type="text" class="form-control" id="currentCity">
-                            </div>
-                            <div class="mb-3">
-                                <label for="previousCity" class="form-label">Ciudad de Residencia Anterior:</label>
-                                <input type="text" class="form-control" id="previousCity">
-                            </div>
-                            <div class="mb-3">
-                                <label for="symptoms" class="form-label">Síntomas Actuales:</label>
-                                <textarea type="text" class="form-control" id="symptoms"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="medicalHistory" class="form-label">Historial medico:</label>
-                                <textarea class="form-control" id="medicalHistory"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </form>
+            <div class="container">
+                <div class="col py-3 scrollable-div">
+                    <h2 class="fw-bold mb-4 text-uppercase">Mi Perfil</h2>
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <form id="profileForm" onsubmit="event.preventDefault(); getUserProfile();">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Nombre:</label>
+                                    <input type="text" class="form-control" id="fullName" required readonly>
+                                </div>  
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Nombre de Usuario:</label>
+                                    <input type="text" class="form-control" id="username" required readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email:</label>
+                                    <input type="email" class="form-control" id="email" required readonly>
+                                </div>                            
+                                <div class="mb-3">
+                                    <label for="currentCity" class="form-label">Ciudad de Residencia Actual:</label>
+                                    <input type="text" class="form-control" id="currentCity">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="previousCity" class="form-label">Ciudad de Residencia Anterior:</label>
+                                    <input type="text" class="form-control" id="previousCity">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="symptoms" class="form-label">Síntomas Actuales:</label>
+                                    <textarea class="form-control" id="symptoms"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="medicalHistory" class="form-label">Historial médico:</label>
+                                    <textarea class="form-control" id="medicalHistory"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -211,9 +243,36 @@
                     }
             });
         }
+
+        function redirectToNotificationPage() {
+            var token = localStorage.getItem('jwtToken');
+            var redirectUrl = "/pacient/notificaciones";
+            $.ajax({
+                type: "GET",
+                url: redirectUrl,
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(data) {
+                    document.open();
+                    document.write(data);
+                    document.close();
+                    window.history.pushState({path: redirectUrl}, '', redirectUrl);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Access denied: ", xhr.responseText);
+                }
+            });
+        }
+
         $(document).ready(function() {
             loadUserProfile();
         }); 
+
+        function logout() {
+            // Borrar todo el localStorage
+            localStorage.clear();
+            // Redirección después de logout si es necesario
+            window.location.href = '/landing-page';
+        }
     </script>
 </body>
 </html>
